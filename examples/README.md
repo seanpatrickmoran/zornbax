@@ -1,6 +1,3 @@
-Here’s a compact README-style version you can drop into your repo.
-
-````md id="g7h2vk"
 # Checkpoint Conversion
 
 This repo supports moving VAE weights between JAX/Flax/Orbax checkpoints and Torch checkpoints through a neutral intermediate format:
