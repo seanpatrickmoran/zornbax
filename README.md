@@ -1,10 +1,12 @@
-````md id="sxv6ey"
+
 # Quickstart
 
 This repo converts VAE checkpoints between JAX/Flax/Orbax and Torch through a neutral intermediate format:
 
 - `*.json` stores key names and tensor metadata
 - `*.dat` stores raw tensor bytes
+
+We do this to avoid an environment that sources both JAX and Torch.
 
 ## JAX Orbax → Torch
 
@@ -87,7 +89,3 @@ python ./zornbax/flax_orbax_neutral_checkpoint.py import \
   --wrap-path params \
   --out-dir ./artifacts/checkpoints/jax_from_torch_step_00031200
 ```
-
-```
-```
-
