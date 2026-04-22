@@ -1,23 +1,9 @@
-````md id="sxv6ey"
-# Quickstart
-
-This repo converts VAE checkpoints between JAX/Flax/Orbax and Torch through a neutral intermediate format:
-
-- `*.json` stores key names and tensor metadata
-- `*.dat` stores raw tensor bytes
-
-## JAX Orbax → Torch
-
-Inspect the checkpoint:
-
-```bash
+#### inspect checkpoint
 python ./zornbax/flax_orbax_neutral_checkpoint.py inspect \
   --orbax-dir ./jax-checkpoints/run_A/step_00031200
-````
 
-Export JAX EMA weights to the neutral format:
 
-```bash
+#### JAX Orbax checkpoint -> neutral weights
 python ./zornbax/flax_orbax_neutral_checkpoint.py export \
   --orbax-dir ./jax-checkpoints/run_A/step_00031200 \
   --select-path ema_params \
@@ -30,21 +16,17 @@ python ./zornbax/flax_orbax_neutral_checkpoint.py export \
   --validate-against-model \
   --manifest-out ./artifacts/neutral/jax_weights.json \
   --data-out ./artifacts/neutral/jax_weights.dat
-```
 
-Convert neutral JAX-style weights into neutral Torch-style weights:
 
-```bash
+#### neutral Flax-style weights -> neutral Torch-style weights
 python ./zornbax/jvae_flax_to_torch_neutral.py convert \
   --src-manifest ./artifacts/neutral/jax_weights.json \
   --src-data ./artifacts/neutral/jax_weights.dat \
   --dst-manifest-out ./artifacts/neutral/torch_keys.json \
   --dst-data-out ./artifacts/neutral/torch_keys.dat
-```
 
-Build the Torch checkpoint:
 
-```bash
+#### neutral Torch-style weights -> Torch checkpoint
 python ./zornbax/torch_neutral_checkpoint.py import \
   --manifest ./artifacts/neutral/torch_keys.json \
   --data ./artifacts/neutral/torch_keys.dat \
@@ -53,41 +35,29 @@ python ./zornbax/torch_neutral_checkpoint.py import \
   --arch-kwargs-json '{"dim":96,"dec_dim":96,"z_dim":16,"dim_mult":[1,2,4,4],"num_res_blocks":2,"attn_scales":[],"temperal_downsample":[false,false,false],"dropout":0.0}' \
   --output-mode model_keyed_checkpoint \
   --out ./artifacts/checkpoints/torch_model.pt
-```
 
-## Torch → JAX Orbax
 
-Export the Torch checkpoint to the neutral format:
 
-```bash
+#### Torch checkpoint -> neutral weights
 python ./zornbax/torch_neutral_checkpoint.py export \
   --torch-checkpoint ./artifacts/checkpoints/torch_model.pt \
   --which model \
   --manifest-out ./artifacts/neutral_rev/torch_weights.json \
   --data-out ./artifacts/neutral_rev/torch_weights.dat
-```
 
-Convert neutral Torch-style weights into neutral Flax-style weights:
 
-```bash
+#### neutral Torch-style weights -> neutral Flax-style weights
 python ./zornbax/wanvae_torch_to_flax_neutral.py convert \
   --src-manifest ./artifacts/neutral_rev/torch_weights.json \
   --src-data ./artifacts/neutral_rev/torch_weights.dat \
   --dst-manifest-out ./artifacts/neutral_rev/flax_keys.json \
   --dst-data-out ./artifacts/neutral_rev/flax_keys.dat
-```
 
-Build the Orbax checkpoint:
 
-```bash
+#### neutral Flax-style weights -> Orbax checkpoint (params subtree)
 python ./zornbax/flax_orbax_neutral_checkpoint.py import \
   --manifest ./artifacts/neutral_rev/flax_keys.json \
   --data ./artifacts/neutral_rev/flax_keys.dat \
   --skeleton-checkpoint ./jax-checkpoints/run_A/step_00031200 \
   --wrap-path params \
   --out-dir ./artifacts/checkpoints/jax_from_torch_step_00031200
-```
-
-```
-```
-
